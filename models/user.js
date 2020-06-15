@@ -42,6 +42,6 @@ const userSchema = new Schema({
 
 userSchema.path('email').validate((email) => {
     return eValidator.validate(email.toString());
-}, 'The email format is not valid');
+}, 'Este formato de correo electrónico no es valido.');
 
 module.exports = mongoose.model('User', userSchema);
