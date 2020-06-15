@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 //Rutas Base
 
 app.get('/pruebas', (req, res) => {
-    res.status(200).send({message: 'Primeras prueas validas.'});
+    res.status(200).send({message: 'Primeras pruebas validas.'});
 });
 
 module.exports = app;
