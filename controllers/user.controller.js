@@ -1,8 +1,8 @@
 const userCtrl = {};
 const User = require('../models/user');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 const moment = require("moment");
+const jwtService = require('../services/jwt');
 
 userCtrl.pruebas = (req, res) => {
     res.status(200).send({
@@ -70,6 +70,9 @@ userCtrl.loginUser = async(req, res) => {
                         //Devolver los datos del usuario logueado
                         if(req.body.getHash) {
                             //Devolver un token de jwt
+                            res.status(200).send({
+                                token: jwtService.createToken(user)
+                            });
                         }else {
                             res.status(200).send({user});
                         }
@@ -82,6 +85,69 @@ userCtrl.loginUser = async(req, res) => {
             }
         }
     });
+}
+
+userCtrl.updateUser = (req, res) => {
+    var userId = req.query.id;
+    var update = req.body;
+
+    User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated) => {
+        if(err) {
+            res.status(500).send({
+                message: 'Error al actualizar el usuario.'
+            });
+        }else {
+            if(!userUpdated) {
+                res.status(404).send({
+                    message: 'No se ha podido actualizar el usuario.'
+                });
+            }else {
+                //Va con el token antiguo esto deberia corregirlo
+                res.status(200).send({user: userUpdated});
+            }
+        }
+    });
+}
+
+userCtrl.uploadImage = async(req, res) => {
+    var userId = req.query.id;
+    var file_name = 'No subido...';
+
+    if(req.files) {
+        var file_path = req.files.photo.path;
+        var file_split = file_path.split('\\');
+        var file_name = file_split[2];
+        var ext_split = file_name.split('\.');
+        var file_ext = ext_split[1];
+
+        console.log(file_name);
+ 
+        if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif') {
+            User.findByIdAndUpdate(userId, {photo: file_name}, {new: true}, (err, userUpdated) => {
+                if(err) {
+                    res.status(500).send({
+                        message: 'Error al actualizar el usuario.'
+                    });
+                }else {
+                    if(!userUpdated) {
+                        res.status(200).send({
+                            message: 'No se ha podido actualizar el usuario.'
+                        });
+                    }else {
+                        res.status(200).send({user: userUpdated});
+                    }
+                }
+            });
+        }else {
+            res.status(200).send({
+                message: 'Extensión del archivo no válido.'
+            });
+        }
+    }else {
+        res.status(200).send({
+            message: 'No has subido ninguna imagen...'
+        });
+    }
 }
 
 
