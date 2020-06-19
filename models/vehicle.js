@@ -39,6 +39,10 @@ const vehicleSchema = new Schema({
             message: "Debes introducir un tipo de vehiculo valido; Por ahora los tipos de vehiculo son Car o Motorbike."
         },
         required: [true, "Debes introducir un tipo de vehiculo."]
+    },
+    client: {
+        type: mongoose.Types.ObjectId,
+        required: [true, "Debes introducir el Id de la empresa de este vehiculo."]
     }
 });
 
