@@ -29,7 +29,7 @@ const vehicleSchema = new Schema({
     description: {
         type: String,
         minlength: 2,
-        maxlength: 30,
+        maxlength: 300,
         required: [true, 'Debes introducir una descripcion para el vehiculo.']
     },
     veh_type: {

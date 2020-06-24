@@ -3,6 +3,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt-nodejs');
 const moment = require("moment");
 const jwtService = require('../services/jwt');
+const fs = require('fs');
+const path = require('path');
 
 userCtrl.pruebas = (req, res) => {
     res.status(200).send({
@@ -134,7 +136,7 @@ userCtrl.uploadImage = async(req, res) => {
                             message: 'No se ha podido actualizar el usuario.'
                         });
                     }else {
-                        res.status(200).send({user: userUpdated});
+                        res.status(200).send({photo: file_name, user: userUpdated});
                     }
                 }
             });
@@ -147,6 +149,57 @@ userCtrl.uploadImage = async(req, res) => {
         res.status(200).send({
             message: 'No has subido ninguna imagen...'
         });
+    }
+}
+
+userCtrl.getImageFile = (req, res) => {
+    var imageFile = req.params.imageFile;
+    var path_file = './uploads/users/' + imageFile;
+
+    fs.exists(path_file, function(exists) {
+        if(exists) {    
+            res.sendFile(path.resolve(path_file));
+        }else {
+            res.status(200).send({
+                message: 'No existe la imagen...'
+            });
+        }
+    })
+}
+
+userCtrl.deleteUser = async (req, res) => {
+    const numDeletedUsers = await User.count({email:{$regex : "deletedEmail.*"}});
+
+    let userId = req.query.id;
+    let update = { 
+        name: null, 
+        surname: null, 
+        email: "deletedEmail"+numDeletedUsers,
+        password: null,
+        photo: null,
+        leaving_date: new Date(),
+        favs: null
+     };
+
+    try{
+        const result = await User.findByIdAndUpdate(userId, update, {new: true}, (err, userDeleted) => {
+            if(err) {
+                res.status(500).send({
+                    message: 'Error al borrar el usuario.'
+                });
+            }else {
+                if(!userDeleted) {
+                    res.status(404).send({
+                        message: 'No se ha podido borrar el usuario.'
+                    });
+                }else {
+                    //Va con el token antiguo esto deberia corregirlo
+                    res.status(200).send({user: userDeleted});
+                }
+            }
+        });    
+    } catch (err){
+        res.status(500).send(err.message);
     }
 }
 

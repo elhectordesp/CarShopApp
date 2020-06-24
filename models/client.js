@@ -12,6 +12,10 @@ const clientSchema = new Schema({
         type: String,
         required: false
       },
+    password: {
+        type: String,
+        required: [true, 'Debes introducir una contraseña.']
+    },
       city: {
         type: String,
         minlength: 1,
@@ -27,7 +31,7 @@ const clientSchema = new Schema({
 });
 
 clientSchema.path('email').validate((email) => {
-    return validator.validate(email.toString());
+    return eValidator.validate(email.toString());
   }, "Este formato de correo electrónico no es valido.");
 
   module.exports = mongoose.model('Client', clientSchema);

@@ -10,6 +10,7 @@ const {mongoose} = require('./database');
 app.set('port', process.env.PORT || 3977);
 app.set('json spaces', 2); //Espacios en el formato json
 
+//Configurar cabeceras HTTP
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
@@ -32,6 +33,8 @@ app.use(passport.session());
 
 //Routes
 app.use('/api/user', require('./routes/user.routes'));
+app.use('/api/vehicle', require('./routes/vehicle.routes'));
+app.use('/api/client', require('./routes/client.routes'));
 
 app.listen(app.get("port"), () => {
     console.log("Servidor en el puerto:" + app.get("port"));
